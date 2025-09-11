@@ -43,68 +43,70 @@ struct ContentView: View {
                 .shadow(color: .black, radius: 30)
                 .animation(.default, value: imageName)
             Spacer()
-            Button("Show Message") {
-                
-                let messages = ["You Are Awesome!",
-                                "You Are Great!",
-                                "Fabulous, That's You!",
-                                "You Are Fantastic!",
-                                "You Swifty!",
-                                "You make me smile!",
-                                "When The Genuis Bar Needs Help, They Call You!",
-                                "Gadzooks!  Good To See You!"]
-                
-                var messageNumber: Int
-                repeat  {
-                    messageNumber = Int.random(in: 0..<messages.count)
-                } while messageNumber == lastMessageNumber
-                
-                message = messages[messageNumber]
-                lastMessageNumber = messageNumber
-                
-                //TODO: Update the imageName variable
-                var imageNumber = Int.random(in: 0..<numberOfImages)
-                while imageNumber == lastImageNumber {
-                    imageNumber = Int.random(in: 0..<numberOfImages)
+            HStack {
+                Text("Sound On:")
+                Toggle("", isOn: $soundOn)
+                    .labelsHidden()
+                    .onChange(of: soundOn) { oldValue, newValue in
+                        if audioPlayer != nil && audioPlayer.isPlaying{
+                                audioPlayer.stop()
+                        }
+                    }
+                Spacer()
+                Button("Show Message") {
+                    
+                    let messages = ["You Are Awesome!",
+                                    "You Are Great!",
+                                    "Fabulous, That's You!",
+                                    "You Are Fantastic!",
+                                    "You Swifty!",
+                                    "You make me smile!",
+                                    "When The Genuis Bar Needs Help, They Call You!",
+                                    "Gadzooks!  Good To See You!"]
+                    
+                    //TODO: Add nonRepeatingRandom func call here
+                    lastMessageNumber = nonRepeatingRandomm(lastNumber: lastMessageNumber, upperBound: messages.count - 1)
+                    message = messages[lastMessageNumber]
+                    
+                    //TODO: Update the imageName variable
+                    lastImageNumber = nonRepeatingRandomm(lastNumber: lastImageNumber, upperBound: numberOfImages - 1)
+                    imageName = "image\(lastImageNumber)"
+                    
+                    lastSoundNumber = nonRepeatingRandomm(lastNumber: lastSoundNumber, upperBound: numberOfSounds - 1)
+                    if soundOn{
+                        playSound(soundName: "sound\(lastSoundNumber)")
+                    }
                 }
-                imageName = "image\(imageNumber)"
-                lastImageNumber = imageNumber
-                
-                repeat  {
-                    soundNumber = Int.random(in: 0..<numberOfSounds)
-                } while soundNumber == lastSoundNumber
-                
-                lastSoundNumber = soundNumber
-                let soundName = "sound\(soundNumber)"
-                guard let soundFile = NSDataAsset(name: soundName) else {
-                    print("😡 Could not read file named \(soundName)")
-                    return
-                }
-                do{
-                    audioPlayer = try AVAudioPlayer(data: soundFile.data)
-                    audioPlayer.stop()
-                    audioPlayer.play()
-                } catch {
-                    print("😡 ERROR: \(error.localizedDescription) creating audioPlayer")
-                }
-                
-                
+                .buttonStyle(.borderedProminent)
+                .font(.title2)
             }
-            .buttonStyle(.borderedProminent)
-            .font(.title2)
-            
-            Toggle("Sound On", isOn: $soundOn)
-//            if soundOn{
-//                audioPlayer.play()
-//            } else {
-//                audioPlayer.stop()
-//            }
-        let _ = print($soundOn)
 
         }
         .padding()
     }
-    
+    func nonRepeatingRandomm(lastNumber: Int, upperBound:Int) -> Int {
+        var newNumber: Int
+        repeat  {
+            newNumber = Int.random(in: 0...upperBound)
+        } while newNumber == lastNumber
+        return newNumber
+    }
+    func playSound(soundName:String) {
+        if audioPlayer != nil && audioPlayer.isPlaying{
+            audioPlayer.stop()
+        }
+        guard let soundFile = NSDataAsset(name: soundName) else {
+            print("😡 Could not read file named \(soundName)")
+            return
+        }
+        do{
+            audioPlayer = try AVAudioPlayer(data: soundFile.data)
+            audioPlayer.stop()
+            audioPlayer.play()
+        } catch {
+            print("😡 ERROR: \(error.localizedDescription) creating audioPlayer")
+        }
+    }
 }
 
 #Preview {
