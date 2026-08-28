@@ -10,39 +10,45 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var message = "Stay Hungry. Stay Foolish!"
-    
+//    @State private var message = ""
+    @State private var imageName = ""
+    @State private var imageNumber = 0
     var body: some View {
         VStack {
             Spacer()
-            Image(systemName: "swift")
+            Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(.orange)
-                .frame(width: 200, height: 200)
+                .clipShape(RoundedRectangle(cornerRadius: 30))
+                .shadow(radius: 30)
             Text(message)
                 .font(.largeTitle)
-                .fontWeight(.ultraLight)
+                .fontWeight(.heavy)
+                .foregroundStyle(.red)
             Spacer()
-            HStack {
-                Button {
-                    message = "You're Awesome!"
-                } label: {
-                    Text("Awesome!")
+         
+            Button ("Press Me")  {
+                let message1 = "You are Awesome!"
+                let message2 = "You are Great!"
+               
+                message = (message == message1 ? message2 : message1)
+ //               imageName =  ( imageName == "image0" ? "image1" : "image0")
+                // TODO: Update the imageName variable
+                //TODO:, //FIXME:, //MARK: - with divider lines -
+                imageName = "image\(imageNumber)"
+                imageNumber +=  1
+                if imageNumber > 9 {
+                    imageNumber = 0
+                   
                 }
-                
-                Button {
-                    message = "You're Great!"
-                } label: {
-                    Text("Great!")
-                }
+                print(imageName)
             }
-                .buttonStyle(.borderedProminent)
-                .font(.title2)
-                .tint(Color.orange)
+            .buttonStyle(.borderedProminent)
+            .font(.title2)
+        
             
-            
-//            Text("Stay Hungry. Stay Foolish.").fontWeight(.bold).font(.title)
         }
+        
         .padding()
     }
 }
